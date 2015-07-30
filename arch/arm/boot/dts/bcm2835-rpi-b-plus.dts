@@ -19,6 +19,14 @@
 			default-state = "keep";
 			linux,default-trigger = "default-on";
 		};
+
+		       dht11: dht11@0 {
+		                                compatible = "dht11";
+		                                pinctrl-names = "default";
+		                                pinctrl-0 = <&dht11_pins>;
+		                                gpios = <&gpio 4 0>;
+		                                status = "okay";
+		                        };
 	};
 };
 
@@ -96,8 +104,27 @@
 		brcm,pins = <18 19 20 21>;
 		brcm,function = <BCM2835_FSEL_ALT0>;
 	};
+
+		         dht11_pins: dht11_pins {
+		                                 brcm,pins = <4>;
+		                                 brcm,function = <0>; // in
+		                                 brcm,pull = <0>; // off
+		          };
+
 };
 
 &hdmi {
 	hpd-gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+&spi {
+    status = "okay";
+    at86rf233@0 {
+        compatible = "atmel,at86rf233";
+        spi-max-frequency = <6000000>;
+        reg = <0>;
+        interrupts = <23 4>;
+        interrupt-parent = <&gpio>;
+        reset-gpio = <&gpio 24 1>;
+        sleep-tpio = <&gpio 25 1>;
+        xtal-trim = /bits/ 8 <0x0F>;
+    };
 };

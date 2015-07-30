@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#define DEBUG
+
 #include <linux/err.h>
 #include <linux/interrupt.h>
 #include <linux/device.h>
@@ -308,6 +310,8 @@ static int dht11_probe(struct platform_device *pdev)
 	struct dht11 *dht11;
 	struct iio_dev *iio;
 	int ret;
+
+	printk("dht11 driver probe called\n");
 
 	iio = devm_iio_device_alloc(dev, sizeof(*dht11));
 	if (!iio) {
