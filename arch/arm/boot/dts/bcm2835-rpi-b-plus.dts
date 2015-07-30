@@ -20,6 +20,14 @@
 			linux,default-trigger = "default-on";
 		};
 	};
+
+	ds18b20: ds18b20@0 {
+                                compatible = "w1-gpio";
+                                pinctrl-names = "default";
+                                pinctrl-0 = <&ds18b20_pins>;
+                                gpios = <&gpio 4 0>;
+                                status = "okay";
+                        };
 };
 
 &gpio {
@@ -96,8 +104,26 @@
 		brcm,pins = <18 19 20 21>;
 		brcm,function = <BCM2835_FSEL_ALT0>;
 	};
+
+	ds18b20_pins: ds18b20_pins {
+                                brcm,pins = <4>;
+                                brcm,function = <0>; // in
+                                brcm,pull = <0>; // off
+        };
 };
 
 &hdmi {
 	hpd-gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+&spi {
+    status = "okay";
+    at86rf233@0 {
+        compatible = "atmel,at86rf233";
+        spi-max-frequency = <6000000>;
+        reg = <0>;
+        interrupts = <23 4>;
+        interrupt-parent = <&gpio>;
+        reset-gpio = <&gpio 24 1>;
+        sleep-tpio = <&gpio 25 1>;
+        xtal-trim = /bits/ 8 <0x0F>;
+    };
 };
