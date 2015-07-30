@@ -100,4 +100,17 @@
 
 &hdmi {
 	hpd-gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+&spi {
+    status = "okay";
+    cc2520@0 {
+        compatible = "ti,cc2520";
+        spi-max-frequency = <6000000>;
+        reg = <0>;
+        fifo-gpio = <&gpio 18 0>;
+        fifop-gpio = <&gpio 23 0>;
+        sfd-gpio = <&gpio 13 0>;
+        cca-gpio = <&gpio 16 0>;
+        vreg-gpio = <&gpio 31 0>;
+        reset-gpio = <&gpio 12 0>;
+    };
 };
