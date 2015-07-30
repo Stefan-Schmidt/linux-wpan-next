@@ -100,4 +100,13 @@
 
 &hdmi {
 	hpd-gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+&spi {
+    status = "okay";
+    mrf24j40ma@0 {
+        compatible = "microchip,mrf24j40ma";
+        spi-max-frequency = <1000000>;
+        reg = <0>;
+        interrupts = <23 4>;
+        interrupt-parent = <&gpio>;
+    };
 };
