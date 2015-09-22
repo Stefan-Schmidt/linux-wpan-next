@@ -8,6 +8,7 @@
  */
 
 #include "nhc.h"
+#include "ghc.h"
 
 #define LOWPAN_GHC_ICMPV6_IDLEN		1
 #define LOWPAN_GHC_ICMPV6_ID_0		0xdf
@@ -20,7 +21,8 @@ static void icmpv6_ghid_setup(struct lowpan_nhc *nhc)
 }
 
 LOWPAN_NHC(ghc_icmpv6, "RFC7400 ICMPv6", NEXTHDR_ICMP, 0,
-	   icmpv6_ghid_setup, LOWPAN_GHC_ICMPV6_IDLEN, NULL, NULL);
+	   icmpv6_ghid_setup, LOWPAN_GHC_ICMPV6_IDLEN, lowpan_ghc_decompression,
+	   NULL);
 
 module_lowpan_nhc(ghc_icmpv6);
 MODULE_DESCRIPTION("6LoWPAN generic header ICMPv6 compression");
