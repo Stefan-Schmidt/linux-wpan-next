@@ -4,6 +4,14 @@
 #include <linux/skbuff.h>
 
 /**
+ * lowpan_ghc_compression
+ *
+ * @skb: skb of 6LoWPAN header to read ghc and replace header.
+ * @needed:
+ */
+int lowpan_ghc_compression(struct sk_buff *skb, u8 **hc_ptr);
+
+/**
  * lowpan_ghc_decompression
  *
  * @skb: skb of 6LoWPAN header to read ghc and replace header.

@@ -121,3 +121,9 @@ int lowpan_ghc_decompression(struct sk_buff *skb, size_t needed, struct ipv6hdr 
 	return 0;
 }
 //EXPORT_SYMBOL(lowpan_ghc_decompression);
+
+int lowpan_ghc_compression(struct sk_buff *skb, u8 **hc_ptr)
+{
+	return 0;
+}
+//EXPORT_SYMBOL(lowpan_ghc_compression);
