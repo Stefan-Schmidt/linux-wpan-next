@@ -39,7 +39,7 @@
 /* checksum elided */
 #define LOWPAN_NHC_UDP_CS_C	0x04
 
-static int udp_uncompress(struct sk_buff *skb, size_t needed)
+static int udp_uncompress(struct sk_buff *skb, size_t needed, struct ipv6hdr *hdr)
 {
 	u8 tmp = 0, val = 0;
 	struct udphdr uh;

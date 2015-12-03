@@ -73,7 +73,7 @@ struct lowpan_nhc {
 	const size_t	idlen;
 
 	void		(*idsetup)(struct lowpan_nhc *nhc);
-	int		(*uncompress)(struct sk_buff *skb, size_t needed);
+	int		(*uncompress)(struct sk_buff *skb, size_t needed, struct ipv6hdr *hdr);
 	int		(*compress)(struct sk_buff *skb, u8 **hc_ptr);
 };
 

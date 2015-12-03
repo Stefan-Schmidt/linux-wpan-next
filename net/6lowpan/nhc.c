@@ -167,7 +167,7 @@ int lowpan_nhc_do_uncompression(struct sk_buff *skb,
 	if (nhc) {
 		if (nhc->uncompress) {
 			ret = nhc->uncompress(skb, sizeof(struct ipv6hdr) +
-					      nhc->nexthdrlen);
+					      nhc->nexthdrlen, hdr);
 			if (ret < 0) {
 				spin_unlock_bh(&lowpan_nhc_lock);
 				return ret;
