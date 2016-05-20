@@ -42,6 +42,15 @@
 #define ATUSB_ALLOC_DELAY_MS	100	/* delay after failed allocation */
 #define ATUSB_TX_TIMEOUT_MS	200	/* on the air timeout */
 
+struct atusb_trac {
+	u64 success;
+	u64 success_data_pending;
+	u64 success_wait_for_ack;
+	u64 channel_access_failure;
+	u64 no_ack;
+	u64 invalid;
+};
+
 struct atusb {
 	struct ieee802154_hw *hw;
 	struct usb_device *usb_dev;
@@ -63,6 +72,8 @@ struct atusb {
 	unsigned char fw_ver_maj;	/* Firmware major version number */
 	unsigned char fw_ver_min;	/* Firmware minor version number */
 	unsigned char fw_hw_type;	/* Firmware hardware type */
+
+	struct atusb_trac trac;		/* Status for transmitted frame */
 };
 
 /* ----- USB commands without data ----------------------------------------- */
@@ -273,6 +284,34 @@ static void atusb_in_good(struct urb *urb)
 	len = *skb->data;
 
 	if (urb->actual_length == 1) {
+		atusb_tx_done(atusb, len);
+		return;
+	}
+
+	if (urb->actual_length == 2) {
+		uint8_t trac = TRAC_MASK(skb->data[1]);
+
+		switch (trac) {
+		case TRAC_SUCCESS:
+			atusb->trac.success++;
+			break;
+		case TRAC_SUCCESS_DATA_PENDING:
+			atusb->trac.success_data_pending++;
+			break;
+		case TRAC_CHANNEL_ACCESS_FAILURE:
+			atusb->trac.channel_access_failure++;
+			break;
+		case TRAC_NO_ACK:
+			atusb->trac.no_ack++;
+			break;
+		case TRAC_INVALID:
+			atusb->trac.invalid++;
+			break;
+		default:
+			WARN_ONCE(1, "received tx trac status %d\n", trac);
+			break;
+		}
+
 		atusb_tx_done(atusb, len);
 		return;
 	}
