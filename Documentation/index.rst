@@ -69,6 +69,8 @@ needed).
    core-api/index
    media/index
    networking/index
+   80211/index
+   ieee802154/index
    input/index
    gpu/index
    security/index
