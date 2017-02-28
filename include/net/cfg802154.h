@@ -329,6 +329,8 @@ struct wpan_dev_header_ops {
 			  const struct ieee802154_addr *daddr,
 			  const struct ieee802154_addr *saddr,
 			  unsigned int len);
+	int	(*ack_create)(struct sk_buff *skb, struct net_device *dev,
+			      unsigned int seq);
 };
 
 struct wpan_dev {

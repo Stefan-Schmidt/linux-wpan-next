@@ -133,6 +133,7 @@ enum ieee802154_hw_flags {
 	IEEE802154_HW_PROMISCUOUS	= BIT(5),
 	IEEE802154_HW_RX_OMIT_CKSUM	= BIT(6),
 	IEEE802154_HW_RX_DROP_BAD_CKSUM	= BIT(7),
+	IEEE802154_SOFT_ACK		= BIT(8),
 };
 
 /* Indicates that receiver omits FCS and xmitter will add FCS on it's own. */

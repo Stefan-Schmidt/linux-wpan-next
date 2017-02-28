@@ -181,7 +181,7 @@ static int fakelb_add_one(struct device *dev)
 	hw->phy->current_channel = 13;
 	phy->channel = hw->phy->current_channel;
 
-	hw->flags = IEEE802154_HW_PROMISCUOUS;
+	hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_SOFT_ACK;
 	hw->parent = dev;
 
 	err = ieee802154_register_hw(hw);

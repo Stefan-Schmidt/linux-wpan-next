@@ -422,8 +422,43 @@ static int ieee802154_header_create(struct sk_buff *skb,
 	return hlen;
 }
 
+static int ieee802154_ack_create(struct sk_buff *skb,
+				 struct net_device *dev,
+				 unsigned seq)
+{
+	struct ieee802154_hdr hdr;
+	int hlen;
+
+	/* If this works out well we can think about piggybacking RSSI or LQI values in the
+	 * ACK frame back to the sender:
+	 * https://www.ibr.cs.tu-bs.de/papers/poettner-wisarnfall2011.pdf
+	 */
+
+	/* Length field? (1 byte)
+	 * Frame control field: (2 bytes)
+	 *   type is ACK frame
+	 *   frame pending field should be left for later 0 for now
+	 *   0 for all other FCF fields
+	 * Sequence number (1 byte)
+	 * FCS (2 byte)
+	 * 6 bytes in total */
+	memset(&hdr.fc, 0, sizeof(hdr.fc));
+	hdr.fc.type = IEEE802154_FC_TYPE_ACK;
+	hdr.seq = seq;
+
+	hlen = ieee802154_hdr_push(skb, &hdr);
+	if (hlen < 0)
+		return -EINVAL;
+
+	skb_reset_mac_header(skb);
+	skb->mac_len = hlen;
+
+	return hlen;
+}
+
 static const struct wpan_dev_header_ops ieee802154_header_ops = {
 	.create		= ieee802154_header_create,
+	.ack_create	= ieee802154_ack_create,
 };
 
 /* This header create functionality assumes a 8 byte array for

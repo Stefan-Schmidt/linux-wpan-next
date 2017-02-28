@@ -293,6 +293,16 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
 
 	rcu_read_unlock();
 
+	if (mac_cb(skb)->ackreq && (local->hw.flags & IEEE802154_SOFT_ACK)) {
+		/* Generate ACK frame in software and sent back. Time critical as the maximum
+		 * waiting time for a ack on the tx side is 864us only */
+
+		/* Set perf probe here for some statistics? */
+
+		/* How to use the ieee802154_ack_create function from here? */
+		/* ieee802154_ack_create(skb, ??, hdr->seq); */
+	}
+
 	return;
 drop:
 	kfree_skb(skb);
