@@ -423,7 +423,6 @@ static int ieee802154_header_create(struct sk_buff *skb,
 }
 
 static int ieee802154_ack_create(struct sk_buff *skb,
-				 struct net_device *dev,
 				 unsigned seq)
 {
 	struct ieee802154_hdr hdr;
@@ -432,6 +431,11 @@ static int ieee802154_ack_create(struct sk_buff *skb,
 	/* If this works out well we can think about piggybacking RSSI or LQI values in the
 	 * ACK frame back to the sender:
 	 * https://www.ibr.cs.tu-bs.de/papers/poettner-wisarnfall2011.pdf
+	 *
+	 * If all of this is to slow we can think aboput handling the software ACK inside the rx()
+	 * of the driver itself. Maybe even in the interupt handler of the incoming packet?!?
+	 *
+	 *
 	 */
 
 	/* Length field? (1 byte)

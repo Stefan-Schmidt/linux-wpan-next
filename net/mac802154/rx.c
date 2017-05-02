@@ -203,11 +203,52 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
 	struct ieee802154_sub_if_data *sdata;
 	struct ieee802154_hdr hdr;
 
+	struct net_device *dev;
+        struct sk_buff *skb_ack;
+        struct ieee802154_mac_cb *cb;
+        struct dgram_sock *ro = dgram_sk(sk);
+        int hlen, tlen;
+        int err;
+
+
 	ret = ieee802154_parse_frame_start(skb, &hdr);
 	if (ret) {
 		pr_debug("got invalid frame\n");
 		kfree_skb(skb);
 		return;
+	}
+
+	if (mac_cb(skb)->ackreq && (local->hw.flags & IEEE802154_SOFT_ACK)) {
+		/* Generate ACK frame in software and sent back. Time critical as the maximum
+		 * waiting time for a ack on the tx side is 864us only */
+
+		/* Set perf probe here for some statistics? */
+
+		hlen = LL_RESERVED_SPACE(dev);
+		tlen = dev->needed_tailroom;
+		skb_ack = sock_alloc_send_skb(sk, hlen + tlen,
+					msg->msg_flags & MSG_DONTWAIT,
+					&err);
+
+		skb_reserve(skb_ack, hlen);
+
+		skb_reset_network_header(skb_ack);
+
+		cb = mac_cb_init(skb_ack);
+		cb->type = IEEE802154_FC_TYPE_ACK;
+
+		/* Set seq number of frame we need to ack */
+
+		skb_ack->dev = dev;
+		skb_ack->sk  = sk;
+		skb_ack->protocol = htons(ETH_P_IEEE802154);
+
+		dev_put(dev);
+
+		err = dev_queue_xmit(skb_ack);
+		if (err > 0)
+			err = net_xmit_errno(err);
+
 	}
 
 	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
@@ -292,16 +333,6 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
 	__ieee802154_rx_handle_packet(local, skb);
 
 	rcu_read_unlock();
-
-	if (mac_cb(skb)->ackreq && (local->hw.flags & IEEE802154_SOFT_ACK)) {
-		/* Generate ACK frame in software and sent back. Time critical as the maximum
-		 * waiting time for a ack on the tx side is 864us only */
-
-		/* Set perf probe here for some statistics? */
-
-		/* How to use the ieee802154_ack_create function from here? */
-		/* ieee802154_ack_create(skb, ??, hdr->seq); */
-	}
 
 	return;
 drop:
